@@ -411,6 +411,71 @@ header {
     }
 }
 
+/* ─── Tempo Control ──────────────────────────────────────────── */
+.tempo-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.tempo-label {
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    white-space: nowrap;
+}
+
+.tempo-value {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+    min-width: 62px;
+}
+
+#tempo-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 120px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+#tempo-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 6px 2px var(--accent-glow);
+    transition: transform .12s;
+}
+
+#tempo-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+#tempo-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 6px 2px var(--accent-glow);
+}
+
+
+
 .tab-content {
     flex: 1;
     overflow-y: auto;

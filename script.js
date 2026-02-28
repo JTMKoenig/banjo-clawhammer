@@ -7,7 +7,7 @@
 const CHORD_LIB = {
     'G': { frets: [0, 0, 0, 0, 0], label: 'G Major' },
     'C': { frets: [2, 1, 0, 2, 0], label: 'C Major' },
-    'D': { frets: [3, 2, 0, 0, 0], label: 'D Major' },
+    'D': { frets: [4, 3, 2, 0, 0], label: 'D Major' },
     'D7': { frets: [1, 2, 0, 0, 0], label: 'D7' },
     'Em': { frets: [0, 0, 0, 2, 0], label: 'E Minor' },
     'Am': { frets: [0, 1, 2, 2, 0], label: 'A Minor' },
@@ -61,6 +61,7 @@ let currentDiff = 'easy';
 let selectedChordIdx = 0;
 let currentProgression = null;
 let lastAllMeasures = null;  // stored for audio playback
+let currentTempo = 100;      // BPM (80–140)
 
 /* ================================================================
    TAB GENERATION
@@ -405,8 +406,16 @@ document.getElementById('play-btn').addEventListener('click', () => {
         setPlayBtnState(false);
     } else {
         setPlayBtnState(true);
-        playSong(lastAllMeasures, 88, () => setPlayBtnState(false));
+        playSong(lastAllMeasures, currentTempo, () => setPlayBtnState(false));
     }
+});
+
+// Tempo slider
+const tempoSlider = document.getElementById('tempo-slider');
+const tempoDisplay = document.getElementById('tempo-display');
+tempoSlider.addEventListener('input', () => {
+    currentTempo = parseInt(tempoSlider.value, 10);
+    tempoDisplay.textContent = currentTempo;
 });
 
 // Auto-generate on load
