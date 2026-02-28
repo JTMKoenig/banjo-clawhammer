@@ -93,6 +93,34 @@ let currentMeasure = 0;
 let currentPos = 0; // 0-15 (sixteenth notes)
 let timerID = null;
 
+// Visual sync state
+let visualQueue = [];
+let visualLoopId = null;
+
+function visualLoop() {
+    if (!isPlaying || !audioCtx) {
+        if (visualLoopId !== null) cancelAnimationFrame(visualLoopId);
+        visualLoopId = null;
+        return;
+    }
+
+    const currentTime = audioCtx.currentTime;
+    let activeEvent = null;
+
+    // Drain events that are now in or before the current time
+    while (visualQueue.length > 0 && visualQueue[0].time <= currentTime) {
+        activeEvent = visualQueue.shift();
+    }
+
+    if (activeEvent) {
+        if (typeof updateVisualBeat === 'function') {
+            updateVisualBeat(activeEvent.measureIdx, activeEvent.pos);
+        }
+    }
+
+    visualLoopId = requestAnimationFrame(visualLoop);
+}
+
 // How far ahead to schedule audio (secs)
 const SCHEDULE_AHEAD_TIME = 0.1;
 // How often the timer wakes up to schedule (secs)
@@ -190,6 +218,8 @@ function nextNote() {
 }
 
 function scheduleNote(measureIdx, pos, time) {
+    visualQueue.push({ measureIdx, pos, time });
+
     const ctx = getAudioCtx();
     const playOpts = currentPlayOpts;
     const clickEnabled = playOpts.enabled === true;
@@ -240,8 +270,8 @@ function scheduler() {
             const remainingTime = (nextNoteTime - getAudioCtx().currentTime) * 1000 + 3500;
             setTimeout(() => {
                 if (isPlaying) {
-                    isPlaying = false;
                     if (masterOnStop) masterOnStop();
+                    stopSong();
                 }
             }, remainingTime);
             return; // stop scheduling
@@ -271,6 +301,11 @@ function playSong(allMeasures, bpm = 90, onStop, playOpts = {}) {
     // Start slightly in the future
     nextNoteTime = ctx.currentTime + 0.1;
 
+    // Reset visual tracker & start loop
+    visualQueue = [];
+    if (typeof resetVisualBeat === 'function') resetVisualBeat();
+    if (visualLoopId === null) visualLoopId = requestAnimationFrame(visualLoop);
+
     // Apply init levels to master nodes
     updateAudioSettings(playOpts.banjoVolume !== undefined ? playOpts.banjoVolume : 0.5,
         playOpts.metroVolume !== undefined ? playOpts.metroVolume : 0.5,
@@ -284,6 +319,9 @@ function playSong(allMeasures, bpm = 90, onStop, playOpts = {}) {
 function stopSong() {
     isPlaying = false;
     clearTimeout(timerID);
+
+    visualQueue = [];
+    if (typeof stopVisualBeat === 'function') stopVisualBeat();
 
     // We cannot easily 'stop' AudioBufferSourceNodes that are already scheduled and connected
     // unless we kept track of every single node and ran `.stop()`.

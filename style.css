@@ -671,6 +671,18 @@ header {
     letter-spacing: 0;
 }
 
+.beat-cursor {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: rgba(106, 230, 184, 0.2);
+    border: 1px solid rgba(106, 230, 184, 0.5);
+    border-radius: 4px;
+    pointer-events: none;
+    display: none;
+    transition: left 0.05s linear;
+}
+
 .tab-strings .str-name {
     color: var(--accent);
     font-weight: 700;

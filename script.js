@@ -62,6 +62,7 @@ let selectedChordIdx = 0;
 let currentProgression = null;
 let lastAllMeasures = null;  // stored for audio playback
 let currentTempo = 100;      // BPM (80–140)
+let uiTabPositions = [];     // stored physical character positions for visual beat cursor
 // UI Slider values are 0-1, 0.5 is default. We scale these up for audio engine later.
 let currentBanjoVol = 0.5;
 let currentMetroVol = 0.5;
@@ -149,24 +150,59 @@ function generateMeasure(chordName, difficulty, variation) {
  * Render a row of up to 4 measures into display strings.
  * Returns { chordLine: string, stringLines: string[] }
  */
-function renderMeasureRow(measures, chordNames) {
+function renderMeasureRow(measures, chordNames, startMeasureIdx) {
     const STR_NAMES = ['d', 'B', 'G', 'D', 'g'];
-    const MEASURE_WIDTH = 16 + 2 + 1; // content + leading dashes + separator bar
 
-    // Chord label line
-    let chordLine = '        '; // left padding for "d|" etc.
-    for (const name of chordNames) {
-        chordLine += name.padEnd(MEASURE_WIDTH, ' ');
+    // First find col widths for each pos in each measure
+    const measureColWidths = measures.map(measure => {
+        const colWidths = [];
+        for (let pos = 0; pos < 16; pos++) {
+            let maxW = 1;
+            for (let strIdx = 0; strIdx < 5; strIdx++) {
+                if (measure[strIdx][pos].length > maxW) maxW = measure[strIdx][pos].length;
+            }
+            colWidths.push(maxW);
+        }
+        return colWidths;
+    });
+
+    let currentChOffset = 2; // "d|"
+    let chordLine = '  ';
+
+    for (let m = 0; m < measures.length; m++) {
+        // We only add a single unit of space before the first string position, which is effectively 0 spaces because it aligns with the column
+        const mLengthBefore = currentChOffset;
+
+        const globalMeasureIdx = startMeasureIdx + m;
+        if (!uiTabPositions[globalMeasureIdx]) uiTabPositions[globalMeasureIdx] = [];
+
+        for (let pos = 0; pos < 16; pos++) {
+            const w = measureColWidths[m][pos];
+            uiTabPositions[globalMeasureIdx][pos] = {
+                leftCh: currentChOffset,
+                widthCh: w
+            };
+            currentChOffset += w;
+        }
+        currentChOffset += 1; // '|'
+        const wMeasure = currentChOffset - mLengthBefore; // Length of the measure block itself
+        const name = chordNames[m] || '';
+        chordLine += name.padEnd(wMeasure, ' ');
     }
 
-    // String lines
     const stringLines = STR_NAMES.map((name, strIdx) => {
         let line = name + '|';
-        for (const measure of measures) {
-            line += '--';
+        for (let m = 0; m < measures.length; m++) {
+            const measure = measures[m];
+
+            // Format each position column
             for (let pos = 0; pos < 16; pos++) {
-                const val = measure[strIdx][pos];
-                line += val === '-' ? '-' : val; // 'h2' naturally adds 2 chars
+                let val = measure[strIdx][pos];
+                // Pad to column width
+                if (val.length < measureColWidths[m][pos]) {
+                    val = val.padEnd(measureColWidths[m][pos], '-');
+                }
+                line += val;
             }
             line += '|';
         }
@@ -185,6 +221,8 @@ function buildTabHTML(progression, difficulty) {
     const allMeasures = allChords.map((ch, i) => generateMeasure(ch, difficulty, i));
     lastAllMeasures = allMeasures;  // expose to audio engine
 
+    uiTabPositions = []; // reset positions for new song
+
     let html = '';
 
     for (let row = 0; row < 2; row++) {
@@ -192,7 +230,7 @@ function buildTabHTML(progression, difficulty) {
         const rowChords = allChords.slice(start, start + 4);
         const rowMeasures = allMeasures.slice(start, start + 4);
 
-        const { chordLine, stringLines } = renderMeasureRow(rowMeasures, rowChords);
+        const { chordLine, stringLines } = renderMeasureRow(rowMeasures, rowChords, start);
         const labelText = row === 0 ? 'Verse (measures 1–4)' : 'Repeat (measures 5–8)';
 
         // Syntax-colour the tab lines
@@ -209,7 +247,7 @@ function buildTabHTML(progression, difficulty) {
         <div class="tab-line-label">${labelText}</div>
         <div class="tab-section">
           <div class="tab-chord-labels">${chordLine}</div>
-          <div class="tab-strings">${coloredLines.join('\n')}</div>
+          <div class="tab-strings" style="position: relative;"><div class="beat-cursor" id="beat-cursor-${row}"></div>${coloredLines.join('\n')}</div>
         </div>
       </div>`;
     }
@@ -383,6 +421,44 @@ function generate() {
         </div>
       </div>
     </div>`);
+}
+
+/* ================================================================
+   VISUAL BEAT INDICATOR
+   ================================================================ */
+
+let lastActiveCursorRow = -1;
+
+function resetVisualBeat() {
+    for (let i = 0; i < 2; i++) {
+        const c = document.getElementById(`beat-cursor-${i}`);
+        if (c) c.style.display = 'none';
+    }
+    lastActiveCursorRow = -1;
+}
+
+function stopVisualBeat() {
+    resetVisualBeat();
+}
+
+function updateVisualBeat(measureIdx, pos) {
+    if (!uiTabPositions || !uiTabPositions[measureIdx]) return;
+
+    const posData = uiTabPositions[measureIdx][pos];
+    const rowIdx = Math.floor(measureIdx / 4);
+
+    if (lastActiveCursorRow !== -1 && lastActiveCursorRow !== rowIdx) {
+        const oldC = document.getElementById(`beat-cursor-${lastActiveCursorRow}`);
+        if (oldC) oldC.style.display = 'none';
+    }
+
+    const cursor = document.getElementById(`beat-cursor-${rowIdx}`);
+    if (cursor) {
+        cursor.style.display = 'block';
+        cursor.style.left = `${posData.leftCh}ch`;
+        cursor.style.width = `${posData.widthCh}ch`;
+    }
+    lastActiveCursorRow = rowIdx;
 }
 
 /* ================================================================
