@@ -264,17 +264,9 @@ function scheduler() {
     // schedule them and advance the pointer.
     while (nextNoteTime < getAudioCtx().currentTime + SCHEDULE_AHEAD_TIME) {
         if (currentMeasure >= currentMeasures.length) {
-            // Song finished scheduling
-            // Need to set a fallback timer to call the stop callback since AudioBuffers don't have "ended"
-            // Wait for the final note tail to finish before firing callback
-            const remainingTime = (nextNoteTime - getAudioCtx().currentTime) * 1000 + 3500;
-            setTimeout(() => {
-                if (isPlaying) {
-                    if (masterOnStop) masterOnStop();
-                    stopSong();
-                }
-            }, remainingTime);
-            return; // stop scheduling
+            // Loop the song indefinitely
+            currentMeasure = 0;
+            currentPos = 0;
         }
 
         scheduleNote(currentMeasure, currentPos, nextNoteTime);
