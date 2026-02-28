@@ -98,6 +98,10 @@ const SCHEDULE_AHEAD_TIME = 0.1;
 // How often the timer wakes up to schedule (secs)
 const LOOKAHEAD = 25.0;
 
+function updateTempo(newBpm) {
+    currentBpm = newBpm;
+}
+
 function updateAudioSettings(bVol, mVol, mPitch, mEnabled, mAccent) {
     // bVol and mVol are UI 0-1 values where 0.5 is the old default (0.65 and 1.0)
     const engineBanjoVol = (bVol / 0.5) * 0.65;
