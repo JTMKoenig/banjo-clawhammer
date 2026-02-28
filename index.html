@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banjo Tab Generator</title>
+    <meta name="description"
+        content="Generate random clawhammer banjo tab notation for beginners. Choose a key and difficulty to get started." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- ─── Header ──────────────────────────────────────────────────── -->
+    <header>
+        <div class="logo">🪕</div>
+        <div class="brand">
+            <h1>Banjo <span>Tab Generator</span></h1>
+            <p>Clawhammer · 5-String · Open G Tuning</p>
+        </div>
+    </header>
+
+    <!-- ─── Controls ────────────────────────────────────────────────── -->
+    <div class="controls-bar">
+        <div class="control-group">
+            <span class="control-label">Key</span>
+            <div class="seg-group" id="key-group">
+                <button class="active" data-key="G" id="key-G">G</button>
+                <button data-key="C" id="key-C">C</button>
+                <button data-key="D" id="key-D">D</button>
+            </div>
+        </div>
+        <div class="control-group">
+            <span class="control-label">Difficulty</span>
+            <div class="seg-group" id="diff-group">
+                <button class="active" data-diff="easy" id="diff-easy">Easy</button>
+                <button data-diff="medium" id="diff-medium">Medium</button>
+            </div>
+        </div>
+        <button id="generate-btn">✦ Generate Song</button>
+    </div>
+
+    <!-- ─── Main ─────────────────────────────────────────────────────── -->
+    <div class="main">
+
+        <!-- Chord Sidebar -->
+        <aside class="chord-sidebar">
+            <div class="sidebar-title">Chord Diagram</div>
+            <div id="chord-diagram-wrap">
+                <div id="chord-name-display">—</div>
+                <div id="chord-label-display">Select a chord</div>
+                <div id="chord-svg-wrap">
+                    <svg id="chord-svg" viewBox="0 0 160 170" xmlns="http://www.w3.org/2000/svg">
+                        <!-- rendered by script.js -->
+                    </svg>
+                </div>
+            </div>
+
+            <div class="chord-cards-title">Progression</div>
+            <div id="chord-cards">
+                <div style="font-size:.75rem;color:var(--text3);padding:4px 4px 0;">Generate a song to see chords.</div>
+            </div>
+
+            <div class="tuning-note">
+                <strong>Open G Tuning</strong><br>
+                5g · 4D · 3G · 2B · 1d<br>
+                (low→high: g D G B d)
+            </div>
+        </aside>
+
+        <!-- Tab Panel -->
+        <section class="tab-panel">
+            <div class="tab-header" id="tab-header" style="display:none;">
+                <div>
+                    <div class="song-title" id="song-title">—</div>
+                    <div class="song-meta" id="song-meta"></div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-content">
+                <div class="empty-state" id="empty-state">
+                    <div class="emoji">🪕</div>
+                    <p>Choose a key &amp; difficulty, then click <strong>Generate Song</strong></p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
