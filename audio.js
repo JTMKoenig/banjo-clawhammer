@@ -108,6 +108,13 @@ function updateAudioSettings(bVol, mVol, mPitch, mEnabled, mAccent) {
     // If metronome is disabled, force its master gain to 0
     const actualMetroVol = mEnabled ? engineMetroVol : 0;
     if (metroMasterGain) metroMasterGain.gain.setTargetAtTime(actualMetroVol, getAudioCtx().currentTime, 0.02);
+
+    // Update active play options so currently scheduled notes pick up live toggles/sliders
+    currentPlayOpts.enabled = mEnabled;
+    currentPlayOpts.accentDownbeat = mAccent;
+    currentPlayOpts.metroPitch = mPitch;
+    currentPlayOpts.banjoVolume = bVol;
+    currentPlayOpts.metroVolume = mVol;
 }
 
 /* ── Metronome click ─────────────────────────────────────────────
