@@ -8,9 +8,9 @@ const CHORD_LIB = {
     'G': { frets: [0, 0, 0, 0, 0], label: 'G Major' },
     'C': { frets: [2, 1, 0, 2, 0], label: 'C Major' },
     'D': { frets: [4, 3, 2, 0, 0], label: 'D Major' },
-    'D7': { frets: [1, 2, 0, 0, 0], label: 'D7' },
-    'Em': { frets: [0, 0, 0, 2, 0], label: 'E Minor' },
-    'Am': { frets: [0, 1, 2, 2, 0], label: 'A Minor' },
+    'D7': { frets: [4, 1, 2, 0, 0], label: 'D7' },
+    'Em': { frets: [2, 0, 0, 2, 0], label: 'E Minor' },
+    'Am': { frets: [2, 1, 2, 2, 0], label: 'A Minor' },
 };
 
 // Each progression has 4 chords; we'll repeat the progression 2× = 8 measures
