@@ -474,6 +474,135 @@ header {
     box-shadow: 0 0 6px 2px var(--accent-glow);
 }
 
+/* ─── Volume Control ─────────────────────────────────────────── */
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    padding-left: 16px;
+}
+
+.volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 60px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+    accent-color: var(--text2);
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--text2);
+    cursor: pointer;
+    transition: transform .12s, background .12s;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    background: var(--text);
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: none;
+    background: var(--text2);
+    cursor: pointer;
+    transition: transform .12s, background .12s;
+}
+
+.volume-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    background: var(--text);
+}
+
+/* ─── Metronome Control ──────────────────────────────────────── */
+.metronome-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    padding-left: 16px;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle-label input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-track {
+    position: relative;
+    width: 34px;
+    height: 18px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    flex-shrink: 0;
+    transition: background .18s, border-color .18s;
+}
+
+.toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--text3);
+    transition: transform .18s, background .18s;
+}
+
+.toggle-label input:checked~.toggle-track {
+    background: rgba(196, 145, 13, .22);
+    border-color: var(--accent);
+}
+
+.toggle-label input:checked~.toggle-track .toggle-thumb {
+    transform: translateX(16px);
+    background: var(--accent);
+}
+
+.toggle-label input:disabled~.toggle-track {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.toggle-label:has(input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.toggle-text {
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    white-space: nowrap;
+}
+
 
 
 .tab-content {

@@ -62,6 +62,12 @@ let selectedChordIdx = 0;
 let currentProgression = null;
 let lastAllMeasures = null;  // stored for audio playback
 let currentTempo = 100;      // BPM (80–140)
+// UI Slider values are 0-1, 0.5 is default. We scale these up for audio engine later.
+let currentBanjoVol = 0.5;
+let currentMetroVol = 0.5;
+let currentMetroPitch = 0.6;
+let metroEnabled = false;    // metronome clicks on/off
+let metroAccent = true;      // accent downbeat
 
 /* ================================================================
    TAB GENERATION
@@ -406,7 +412,13 @@ document.getElementById('play-btn').addEventListener('click', () => {
         setPlayBtnState(false);
     } else {
         setPlayBtnState(true);
-        playSong(lastAllMeasures, currentTempo, () => setPlayBtnState(false));
+        playSong(lastAllMeasures, currentTempo, () => setPlayBtnState(false), {
+            enabled: metroEnabled,
+            accentDownbeat: metroAccent,
+            banjoVolume: currentBanjoVol,
+            metroVolume: currentMetroVol,
+            metroPitch: currentMetroPitch
+        });
     }
 });
 
@@ -416,7 +428,46 @@ const tempoDisplay = document.getElementById('tempo-display');
 tempoSlider.addEventListener('input', () => {
     currentTempo = parseInt(tempoSlider.value, 10);
     tempoDisplay.textContent = currentTempo;
+    if (typeof updateTempo === 'function') updateTempo(currentTempo);
 });
+
+// Volume sliders
+const banjoVolSlider = document.getElementById('banjo-vol');
+if (banjoVolSlider) {
+    banjoVolSlider.addEventListener('input', () => {
+        currentBanjoVol = parseFloat(banjoVolSlider.value);
+        if (typeof updateAudioSettings === 'function') updateAudioSettings(currentBanjoVol, currentMetroVol, currentMetroPitch, metroEnabled, metroAccent);
+    });
+}
+
+const metroVolSlider = document.getElementById('metro-vol');
+if (metroVolSlider) {
+    metroVolSlider.addEventListener('input', () => {
+        currentMetroVol = parseFloat(metroVolSlider.value);
+        if (typeof updateAudioSettings === 'function') updateAudioSettings(currentBanjoVol, currentMetroVol, currentMetroPitch, metroEnabled, metroAccent);
+    });
+}
+
+const metroPitchSlider = document.getElementById('metro-pitch');
+if (metroPitchSlider) {
+    metroPitchSlider.addEventListener('input', () => {
+        currentMetroPitch = parseFloat(metroPitchSlider.value);
+        if (typeof updateAudioSettings === 'function') updateAudioSettings(currentBanjoVol, currentMetroVol, currentMetroPitch, metroEnabled, metroAccent);
+    });
+}
+
+// Metronome toggles
+document.getElementById('metro-enabled').addEventListener('change', e => {
+    metroEnabled = e.target.checked;
+    document.getElementById('metro-accent').disabled = !metroEnabled;
+    if (typeof updateAudioSettings === 'function') updateAudioSettings(currentBanjoVol, currentMetroVol, currentMetroPitch, metroEnabled, metroAccent);
+});
+document.getElementById('metro-accent').addEventListener('change', e => {
+    metroAccent = e.target.checked;
+    if (typeof updateAudioSettings === 'function') updateAudioSettings(currentBanjoVol, currentMetroVol, currentMetroPitch, metroEnabled, metroAccent);
+});
+// Sync initial disabled state
+document.getElementById('metro-accent').disabled = true;
 
 // Auto-generate on load
 generate();

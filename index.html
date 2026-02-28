@@ -84,6 +84,27 @@
                     <input type="range" id="tempo-slider" min="80" max="140" value="100" step="1" />
                     <span class="tempo-value"><span id="tempo-display">100</span> BPM</span>
                 </div>
+                <div class="volume-control">
+                    <span class="tempo-label">Music Vol</span>
+                    <input type="range" class="volume-slider" id="banjo-vol" min="0" max="1" step="0.05" value="0.5" />
+                </div>
+                <div class="volume-control">
+                    <span class="tempo-label">Metro Vol</span>
+                    <input type="range" class="volume-slider" id="metro-vol" min="0" max="1" step="0.05" value="0.5" />
+                </div>
+                <div class="metronome-control">
+                    <span class="control-label">Metronome</span>
+                    <label class="toggle-label" title="Enable metronome clicks">
+                        <input type="checkbox" id="metro-enabled" />
+                        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                        <span class="toggle-text">Clicks</span>
+                    </label>
+                    <label class="toggle-label" title="Accent the downbeat of each measure">
+                        <input type="checkbox" id="metro-accent" checked />
+                        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                        <span class="toggle-text">Accent downbeat</span>
+                    </label>
+                </div>
                 <button id="play-btn" class="play-btn">&#x25b6; Play</button>
             </div>
 
